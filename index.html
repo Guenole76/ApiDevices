@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Conversion Euro</title>
+  </head>
+  <body>
+   
+  <h2>Convertir des Euros</h2>
+  <div>
+    <input type="number">
+    <select id="EUR">
+       <option  >Euro</option> 
+    </select>
+  </div>
+
+  <span> = </span>
+
+  <div>
+    <input type="number">
+    <select id="convert">
+     <option value="currency">Currency</option>
+    </select>
+  
+  </div>
+<p>Taux de conversion</p>
+<p id="conversion">conversion:</p>
+
+<p>Derniere mise a jour de l'API:</p>
+<p id="date">date</p>
+
+
+  <script type="text/javascript">//balise pour definir la zone d'ecriture du/des script
+ 
+    const select = document.querySelectorAll('select');//const input contient  tous les 'select' du html grace a  querySelectorAll('select')
+    const input = document.querySelectorAll('input');//const input contient  tous les 'input' du html grace a  querySelectorAll('input')
+    const API_URL = "https://api.ratesapi.io/api/latest"; // API_URL contient l'url de l'API
+    let html = '';
+
+    
+
+
+    async function currency(){
+      const res = await fetch(API_URL); //appele de l'api
+      const data = await res.json(); // retourne un 
+     //console.log(data.rates)
+      const arrKeys = Object.keys(data.rates);
+      //console.log(arrKeys[0])
+      const rates = data.rates;
+
+      arrKeys.map(item =>{
+        return html += `<option value=${item}>${item}</option>`; // on retourne les valeur de "item" dans value et l'affichage
+      });
+
+      for(let i=0; i<select.length; i++){
+        select[i].innerHTML = html;  
+      };
+
+
+      function convert(i,j){// création de la fonction "convert" avec i et j en parametre
+        input[i].value = input[j].value * rates[select[i].value] / rates[select[j].value]; // fonction pour convertir la valeur de la 1ere monnaie en la valeur de la 2eme monnaie
+      }
+
+      //console.log(rates[select[1].value])
+      input[0].addEventListener('keyup', ()=> convert(1,0));
+
+      input[1].addEventListener('keyup', ()=> convert(0,1));
+
+      select[0].addEventListener('change', ()=> convert(1,0));
+      
+      select[1].addEventListener('change', ()=> convert(0,1));
+
+
+      
+
+      let base = data.base;
+        document.title = base// on selectionne l'élement "base" du json qui est "EUR" et on ecrit "EUR" en titre de la page
+
+      
+
+      let date = res.date;
+        document.getElementById("date").innerHTML = data.date // on affich la date contenu dans le json dans l'éléement qui porte l'id "date"
+
+
+
+      //console.log(data.date)
+      //console.log(select[1] /)
+      //console.log(input[0])
+    };
+    
+
+    currency();//appele la fonction currency
+    //console.log(input[i].value)
+
+
+
+  </script>
+  </body>
+</html>
